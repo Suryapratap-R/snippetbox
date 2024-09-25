@@ -44,20 +44,27 @@ func (app *application) snippetView(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func (app *application) snippetCreate(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Display a form for creating a new snippet..."))
-}
-
 func (app *application) snippetCreatePost(w http.ResponseWriter, r *http.Request) {
-	title := "bla title"
-	content := "bla bal \nmount everaasdfj\nkadsfjad"
-	expires := 7
+	err := r.ParseForm()
+	if err != nil {
+		app.clientError(w, r, http.StatusBadRequest)
+		return
+	}
+	title, content := r.PostForm.Get("title"), r.PostForm.Get("content")
+	expires, err := strconv.Atoi(r.PostForm.Get("expires"))
+	if err != nil {
+		app.clientError(w, r, http.StatusBadRequest)
+		return
+	}
 	id, err := app.snippets.Insert(title, content, expires)
 	if err != nil {
 		app.serverError(w, r, err)
 		return
 	}
 	http.Redirect(w, r, fmt.Sprintf("/snippet/view/%d", id), http.StatusSeeOther)
-	// w.WriteHeader(http.StatusCreated)
-	// w.Write([]byte("Save a new snippet..."))
+}
+
+func (app *application) snippetCreate(w http.ResponseWriter, r *http.Request) {
+	data := app.newTemplateData(r)
+	app.render(w, r, http.StatusOK, "create.tmpl.html", data)
 }
