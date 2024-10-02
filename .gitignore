@@ -26,3 +26,4 @@ go.work.sum
 
 # tls keys
 tls/
+.DS_Store

@@ -45,7 +45,7 @@ func (m *UserModel) Authenticate(email, password string) (int, error) {
 	var id int
 	var hashedPassword []byte
 
-	stmt := `SELECT id, hashed_passowrd FROM users where email = ?`
+	stmt := `SELECT id, hashed_password FROM users where email = ?`
 	err := m.DB.QueryRow(stmt, email).Scan(&id, &hashedPassword)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
